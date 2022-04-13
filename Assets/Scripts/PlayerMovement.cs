@@ -8,14 +8,21 @@ public class PlayerMovement : MonoBehaviour
 
      [SerializeField] private float moveSpeed = 2.0f;
      [SerializeField] private float jumpHeight = 5.0f;
-     Rigidbody2D myRigidBody2D;
-     CircleCollider2D myCircleCollider2D;
+
+     private SpriteRenderer[] mySpriteRenderers;
+     private AudioSource myAudioSource;
+     private Animator myAnimator;
+     private Rigidbody2D myRigidBody2D;
+     private CircleCollider2D myCircleCollider2D;
+
      int numJumps = 2;
      int jumpsLeft;
+
      [SerializeField]
      private bool canJump;
      [SerializeField]
-     LayerMask canJumpOn;
+     private bool isMoving;
+     [SerializeField]
 
      // Vector of the previous move input.  Used for determining
      // what direction the object should face when movement stops.
@@ -34,29 +41,52 @@ public class PlayerMovement : MonoBehaviour
           }
      }
 
-
-/*     private void OnTriggerExit2D(Collider2D collision)
-     {
-          if (collision.CompareTag("Platform"))
-          {
-               canJump = false;
-               Debug.Log(canJump);
-          }
-     }*/
-
      // Start is called before the first frame update
      void Start()
     {
+          myAudioSource = GetComponentInChildren<AudioSource>();
+          mySpriteRenderers = GetComponentsInChildren<SpriteRenderer>();
           myRigidBody2D = GetComponent<Rigidbody2D>();
           myCircleCollider2D = GetComponent<CircleCollider2D>();
+          myAnimator = GetComponent<Animator>();
           jumpsLeft = numJumps;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+     private void Update()
+     {
+          handleAnims();
+          FlipSprite();
+     }
+
+
+     // Update is called once per frame
+     void FixedUpdate()
     {
           Move();
     }
+
+     private void FlipSprite()
+     {
+          if (moveAxis != 0)
+          {
+               transform.localScale = new Vector3(moveAxis, 
+                    transform.localScale.y, transform.localScale.z);
+          }
+     }
+
+     private void handleAnims()
+     {
+          //Debug.Log(moveAxis);
+          if (Mathf.Abs(moveAxis) > 0)
+          {
+               isMoving = true;
+               myAnimator.SetBool("IsMoving", isMoving);
+          }
+          else{
+               isMoving = false;
+               myAnimator.SetBool("IsMoving", isMoving);
+          }
+     }
 
 
      // NOTE: This is mainly to GET THE INPUT CONTEXT FLOATS
@@ -73,12 +103,13 @@ public class PlayerMovement : MonoBehaviour
           {
                Jump();
           }
-          
+
      }
 
      private void Jump()
      {
           Debug.Log("Jump!");
+          myAudioSource.Play();
           myRigidBody2D.velocity = Vector2.up * jumpHeight;
           jumpsLeft--;
      }
@@ -89,6 +120,9 @@ public class PlayerMovement : MonoBehaviour
           Vector2 currentposition = transform.position;
           currentposition.x += moveAxis * moveSpeed * Time.deltaTime;
           transform.position = currentposition;
+          //Debug.Log(currentposition);
+          //Debug.Log(moveAxis);
+          //myRigidBody2D.velocity = Vector2.right * moveAxis * moveSpeed;
      }
 
 }

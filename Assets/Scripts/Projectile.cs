@@ -12,6 +12,8 @@ public class Projectile : MonoBehaviour
      [SerializeField]
      Vector2 forwardVector;
      // Start is called before the first frame update
+     
+     
 
      private void OnCollisionEnter2D(Collision2D collision)
      {

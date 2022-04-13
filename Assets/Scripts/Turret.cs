@@ -15,6 +15,9 @@ public class Turret : MonoBehaviour
      [SerializeField]
      private float timeBtwShots = 3f;
      private float timeShotRefresh;
+
+     private AudioSource myAudioSource;
+
      private void OnDrawGizmosSelected()
      {
           Gizmos.color = Color.red;
@@ -25,7 +28,7 @@ public class Turret : MonoBehaviour
      // Start is called before the first frame update
      void Start()
     {
-          //fireDirection = transform.TransformDirection(Vector2.down) * 3;
+          myAudioSource = GetComponent<AudioSource>();
           timeShotRefresh = timeBtwShots;
           Fire();
     }
@@ -41,6 +44,7 @@ public class Turret : MonoBehaviour
           timeBtwShots -= Time.deltaTime;
           if (timeBtwShots <= 0)
           {
+               SoundManager.Instance.PlaySound(myAudioSource.clip);
                Instantiate(myProjectile, firePoint);
                timeBtwShots = timeShotRefresh;
           }
